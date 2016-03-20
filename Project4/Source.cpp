@@ -85,7 +85,8 @@ public:
 	void addCellNode(DT1* info, Cell<DT2>* cell); //Add a cell node to the master cell
 	void operator= (const MasterCell<DT1, DT2>& mc);//Overloaded assignment operator
 	CellNode<DT1, DT2>* getCellNodes(); //Return a pointer to the first cell node
-	int getNumNodes() const; //Return the number of nodes in the master cell
+	int getNumNodes() const; //Return the number of nodes in the master celltemplate<class DT1, class DT2>
+	vector<vector<char>> findKeywords(int key);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -352,6 +353,14 @@ template<class DT1, class DT2>
 int MasterCell<DT1, DT2>::getNumNodes() const {
 	return numNodes;
 }
+///////////////////////////////////////////////////////////////////////////////////////
+//Project 4 files
+
+//Return a list of info variables corresponding to cell nodes containing the key
+template<class DT1, class DT2>
+vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
+	
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //Overloaded ostream operators
@@ -446,7 +455,7 @@ int main() {
 	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
 	cout << masterCell << endl;
 
-
+/*
 	///Call the methods for each class to demonstrate that they work
 	//	Demonstrate	the	working	of the classes with	two	different data types: int and character strings.
 
@@ -597,5 +606,6 @@ int main() {
 		cout << "\tInitialized cell cellNode " << i << ' ' << initializedMasterCell.getCellNodes()[i] << endl;
 	}
 	cout << "Finished" << endl;
+*/
 	return 0;
 }
