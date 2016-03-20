@@ -1,5 +1,6 @@
 # include <iostream>
 using namespace std;
+int ASCIIOFFSET = 48;
 ///Vector class to create and manage resizable arrays
 template<class DT>
 class vector {
@@ -17,7 +18,7 @@ public:
 	vector(const vector<DT>& ac); // Copy constructor
 	~vector(); // Destructor
 	void operator= (const vector<DT>& ac); //Overloaded assignment operator
-	DT& operator[](int i); //Overloaded [] operator
+	DT&  operator[](int i); //Overloaded [] operator
 	void add(DT& x); //Adds a new datatype
 	void insertAt(int i, DT& x); //Insert an element at a given index
 	void removeAt(int i); //Remove an element at a given index
@@ -45,6 +46,7 @@ public:
 	void operator= (const Cell<DT>& c);//Overloaded assignment operator
 	Cell<DT>* getRight(); //Return the pointer to the right cell
 	void setRight(Cell<DT>* cellPointer); //Set the pointer to the right cell
+	DT getValue();
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +67,7 @@ public:
 	Cell<DT2>* getFirstCell(); //Return a pointer to the first cell
 	DT1* getInfo(); //Return a pointer to the info
 	void operator= (const CellNode<DT1, DT2>& c);//Overloaded assignment operator
+	bool CellNode<DT1, DT2>::contains(int key);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +136,7 @@ void vector<DT>::operator= (const vector<DT>& ac) {
 }
 ///Overloaded square bracket operator
 template<class DT>
-DT & vector<DT>::operator[](int i) {
+DT& vector<DT>::operator[](int i) {
 	//TODO if ((i < 0) || (i >= (capacity - 1))) throw errors;
 	return arrayOfDT[i];
 }
@@ -254,6 +257,11 @@ void Cell<DT>::setRight(Cell<DT>* cellPointer) {
 	_right = cellPointer;
 }
 
+template<class DT>
+DT Cell<DT>::getValue() {
+	return *_value;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //Cell Node Methods
 
@@ -294,7 +302,15 @@ void CellNode<DT1, DT2>::operator=(const CellNode<DT1, DT2>& cn) {
 	_info = cn._info;
 	_myCell = cn._myCell;
 }
-
+template<class DT1, class DT2>
+bool CellNode<DT1, DT2>::contains(int key) {
+	for (Cell<DT2>* c = _myCell; c != nullptr; c = c->getRight()) {
+		if (intMatch(c->getValue(), key)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //Master Cell Methods
@@ -359,7 +375,21 @@ int MasterCell<DT1, DT2>::getNumNodes() const {
 //Return a list of info variables corresponding to cell nodes containing the key
 template<class DT1, class DT2>
 vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
-	
+	vector<vector<char>> matchingNodes;
+	//For each cell node
+	for (int i = 0; i < numNodes; i++) {
+		//If the cell node contains the key add its info to the list
+		if (_myCellNodes[i].contains(key)) {
+			matchingNodes.add(*_myCellNodes[i].getInfo());
+		}
+	}
+
+//	for (Cell<DT2>* c = _myCell; c != nullptr; c = c->getRight()) {
+//		if (intMatch(c->getValue(), key)) {
+//			return true;
+//		}
+//	}
+	return matchingNodes;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -397,7 +427,33 @@ ostream& operator<< (ostream& s, MasterCell<T1, T2>& mc) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-
+int vectorCharToInt(vector<char> charForm) {
+	int sum = 0;
+	int multiplier = 1;
+	int length = charForm.getSize();
+	for(int i = (length -1) ; i >= 0; i--) {
+		sum += (charForm[i] - ASCIIOFFSET) * multiplier;
+		multiplier *= 10;
+	}
+	return sum;
+}
+bool intMatch(vector<char> charForm, int i) {
+	if (vectorCharToInt(charForm) == i){
+	return true;
+	}
+	return false;
+}
+bool stringMatch(vector<char> string1, vector<char> string2) {
+	if (string1.getSize() != string2.getSize()) {
+		return false;
+	}
+	for (int i = 0; i < string1.getSize(); i++) {
+		if (string1[i] != string2[i]) {
+			return false;
+		}
+	}
+	return true;
+}
 int main() {
 	char blank = ' ';
 	int noItems;
@@ -454,6 +510,7 @@ int main() {
 	//End of file
 	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
 	cout << masterCell << endl;
+	cout<< masterCell.findKeywords(3);
 
 /*
 	///Call the methods for each class to demonstrate that they work
