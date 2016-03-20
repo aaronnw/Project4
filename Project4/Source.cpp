@@ -419,6 +419,7 @@ vector<int> MasterCell<DT1, DT2>::andKeywords(char* input1, char* input2) {
 	}
 	return commonIntegers;
 }
+
 //Return all integers in either of two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::orKeywords(char* input1, char* input2) {
@@ -454,7 +455,8 @@ vector<int> MasterCell<DT1, DT2>::orKeywords(char* input1, char* input2) {
 	}
 	return intList;
 }
-//Return all integers in either of two keywords
+
+//Return all integers unique between two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::xorKeywords(char* input1, char* input2) {
 	vector<char> keyword1 = inputStringToVector(input1);
@@ -524,6 +526,8 @@ ostream& operator<< (ostream& s, MasterCell<T1, T2>& mc) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+
+//Converts a vector of type character into an int
 int vectorCharToInt(vector<char> charForm) {
 	int sum = 0;
 	int multiplier = 1;
@@ -534,6 +538,7 @@ int vectorCharToInt(vector<char> charForm) {
 	}
 	return sum;
 }
+//Converts a string to an vector of type character
 vector<char> inputStringToVector(char* inputString) {
 	vector<char> resultVector;
 	int i = 0;
@@ -543,12 +548,14 @@ vector<char> inputStringToVector(char* inputString) {
 	}
 	return resultVector;
 }
+//Compares a vector of type character to an int
 bool intMatch(vector<char> charForm, int i) {
 	if (vectorCharToInt(charForm) == i) {
 		return true;
 	}
 	return false;
 }
+//Compares two strings
 bool stringMatch(vector<char> string1, vector<char> string2) {
 	if (string1.getSize() != string2.getSize()) {
 		return false;
@@ -560,9 +567,10 @@ bool stringMatch(vector<char> string1, vector<char> string2) {
 	}
 	return true;
 }
+//Main method
 int main() {
 	char blank = ' ';
-//	int noItems;
+//	int noItems; --Removed for project 4 based on example
 	char c;
 	int count = 0;
 	cin.get(c);
@@ -580,8 +588,8 @@ int main() {
 			(*info).add(c);
 			cin.get(c);
 		}
-//		cin.get(blank);
-//		cin >> noItems;
+//		cin.get(blank); --Removed for project 4 based on example
+//		cin >> noItems; --Removed for project 4 based on example
 		cin.get(blank);
 		//Read in the values
 		do {
@@ -618,10 +626,9 @@ int main() {
 		if (cin.eof()) break;
 	}
 	//End of file
-	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
+//	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;  --Removed for project 4
 	cout << masterCell << endl;
-	cout << masterCell.orKeywords("Compiler Construction", "Theory of Computation");
-	//	cout << masterCell.findKeywords(5000) << endl;
+	
 
 	/*
 		///Call the methods for each class to demonstrate that they work
