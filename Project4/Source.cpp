@@ -19,7 +19,7 @@ public:
 	~vector(); // Destructor
 	void operator= (const vector<DT>& ac); //Overloaded assignment operator
 	DT&  operator[](int i); //Overloaded [] operator
-	void add(DT& x); //Adds a new datatype
+	void add(const DT& x); //Adds a new datatype
 	void insertAt(int i, DT& x); //Insert an element at a given index
 	void removeAt(int i); //Remove an element at a given index
 	void expand(); //Expand the array capacity
@@ -90,6 +90,9 @@ public:
 	CellNode<DT1, DT2>* getCellNodes(); //Return a pointer to the first cell node
 	int getNumNodes() const; //Return the number of nodes in the master celltemplate<class DT1, class DT2>
 	vector<vector<char>> findKeywords(int key);
+	vector<int> andKeywords(char* input1, char* input2);
+	vector<int> orKeywords(char* input1, char* input2);
+	vector<int> xorKeywords(char* input1, char* input2);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +145,7 @@ DT& vector<DT>::operator[](int i) {
 }
 ///Add an element to the end of the array
 template<class DT>
-void vector<DT>::add(DT & x) {
+void vector<DT>::add(const DT & x) {
 	//If there is room, add to the end of current array
 	if (numElements < capacity) {
 		arrayOfDT[numElements] = x;
@@ -386,6 +389,106 @@ vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
 	return matchingNodes;
 }
 
+//Return all integers common to two keywords
+template<class DT1, class DT2>
+vector<int> MasterCell<DT1, DT2>::andKeywords(char* input1, char* input2) {
+	vector<char> keyword1 = inputStringToVector(input1);
+	vector<char> keyword2 = inputStringToVector(input2);
+	vector<int> commonIntegers;
+	CellNode<DT1, DT2> cn1;
+	CellNode<DT1, DT2> cn2;
+	bool cn1Found = false;
+	bool cn2Found = false;
+	//For each cell node
+	for (int i = 0; i < numNodes; i++) {
+		//If the cell node contains the key add its info to the list
+		if (stringMatch(*_myCellNodes[i].getInfo(), keyword1)) {
+			cn1 = _myCellNodes[i];
+			cn1Found = true;
+		}
+		else if (stringMatch(*_myCellNodes[i].getInfo(), keyword2)) {
+			cn2 = _myCellNodes[i];
+			cn2Found = true;
+		}
+	}
+	//Iterate through first node checking to see if the second has any integers in commmon
+	for (Cell<DT2>* c = cn1.getFirstCell(); c != nullptr; c = c->getRight()) {
+		if (cn2.contains(vectorCharToInt((*c).getValue()))) {
+			commonIntegers.add(vectorCharToInt((*c).getValue()));
+		}
+	}
+	return commonIntegers;
+}
+//Return all integers in either of two keywords
+template<class DT1, class DT2>
+vector<int> MasterCell<DT1, DT2>::orKeywords(char* input1, char* input2) {
+	vector<char> keyword1 = inputStringToVector(input1);
+	vector<char> keyword2 = inputStringToVector(input2);
+	vector<int> intList;
+	CellNode<DT1, DT2> cn1;
+	CellNode<DT1, DT2> cn2;
+	bool cn1Found = false;
+	bool cn2Found = false;
+	//For each cell node
+	for (int i = 0; i < numNodes; i++) {
+		//If the cell node contains the key add its info to the list
+		if (stringMatch(*_myCellNodes[i].getInfo(), keyword1)) {
+			cn1 = _myCellNodes[i];
+			cn1Found = true;
+		}
+		else if (stringMatch(*_myCellNodes[i].getInfo(), keyword2)) {
+			cn2 = _myCellNodes[i];
+			cn2Found = true;
+		}
+	}
+	//Iterate through both nodes, only adding one of each integer
+	for (Cell<DT2>* c1 = cn1.getFirstCell(); c1 != nullptr; c1 = c1->getRight()) {
+		if (!cn2.contains(vectorCharToInt(c1->getValue()))) {
+			intList.add(vectorCharToInt(c1->getValue()));
+		}
+	}
+	for (Cell<DT2>* c2 = cn2.getFirstCell(); c2 != nullptr; c2 = c2->getRight()) {
+//		if (!cn1.contains(vectorCharToInt(c2->getValue()))) {
+			intList.add(vectorCharToInt(c2->getValue()));
+//		}
+	}
+	return intList;
+}
+//Return all integers in either of two keywords
+template<class DT1, class DT2>
+vector<int> MasterCell<DT1, DT2>::xorKeywords(char* input1, char* input2) {
+	vector<char> keyword1 = inputStringToVector(input1);
+	vector<char> keyword2 = inputStringToVector(input2);
+	vector<int> intList;
+	CellNode<DT1, DT2> cn1;
+	CellNode<DT1, DT2> cn2;
+	bool cn1Found = false;
+	bool cn2Found = false;
+	//For each cell node
+	for (int i = 0; i < numNodes; i++) {
+		//If the cell node contains the key add its info to the list
+		if (stringMatch(*_myCellNodes[i].getInfo(), keyword1)) {
+			cn1 = _myCellNodes[i];
+			cn1Found = true;
+		}
+		else if (stringMatch(*_myCellNodes[i].getInfo(), keyword2)) {
+			cn2 = _myCellNodes[i];
+			cn2Found = true;
+		}
+	}
+	//Iterate through both nodes, only adding one of each integer
+	for (Cell<DT2>* c1 = cn1.getFirstCell(); c1 != nullptr; c1 = c1->getRight()) {
+		if (!cn2.contains(vectorCharToInt(c1->getValue()))) {
+			intList.add(vectorCharToInt(c1->getValue()));
+		}
+	}
+	for (Cell<DT2>* c2 = cn2.getFirstCell(); c2 != nullptr; c2 = c2->getRight()) {
+		if (!cn1.contains(vectorCharToInt(c2->getValue()))) {
+			intList.add(vectorCharToInt(c2->getValue()));
+		}
+	}
+	return intList;
+}
 ///////////////////////////////////////////////////////////////////////////////////////
 //Overloaded ostream operators
 
@@ -425,15 +528,24 @@ int vectorCharToInt(vector<char> charForm) {
 	int sum = 0;
 	int multiplier = 1;
 	int length = charForm.getSize();
-	for(int i = (length -1) ; i >= 0; i--) {
+	for (int i = (length - 1); i >= 0; i--) {
 		sum += (charForm[i] - ASCIIOFFSET) * multiplier;
 		multiplier *= 10;
 	}
 	return sum;
 }
+vector<char> inputStringToVector(char* inputString) {
+	vector<char> resultVector;
+	int i = 0;
+	while (inputString[i] != NULL) {
+		resultVector.add(inputString[i]);
+		i++;
+	}
+	return resultVector;
+}
 bool intMatch(vector<char> charForm, int i) {
-	if (vectorCharToInt(charForm) == i){
-	return true;
+	if (vectorCharToInt(charForm) == i) {
+		return true;
 	}
 	return false;
 }
@@ -450,7 +562,7 @@ bool stringMatch(vector<char> string1, vector<char> string2) {
 }
 int main() {
 	char blank = ' ';
-	int noItems;
+//	int noItems;
 	char c;
 	int count = 0;
 	cin.get(c);
@@ -468,8 +580,8 @@ int main() {
 			(*info).add(c);
 			cin.get(c);
 		}
-		cin.get(blank);
-		cin >> noItems;
+//		cin.get(blank);
+//		cin >> noItems;
 		cin.get(blank);
 		//Read in the values
 		do {
@@ -508,159 +620,160 @@ int main() {
 	//End of file
 	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
 	cout << masterCell << endl;
-	cout << masterCell.findKeywords(5000) << endl;
+	cout << masterCell.orKeywords("Compiler Construction", "Theory of Computation");
+	//	cout << masterCell.findKeywords(5000) << endl;
 
-/*
-	///Call the methods for each class to demonstrate that they work
-	//	Demonstrate	the	working	of the classes with	two	different data types: int and character strings.
+	/*
+		///Call the methods for each class to demonstrate that they work
+		//	Demonstrate	the	working	of the classes with	two	different data types: int and character strings.
 
-	vector<char>* testInfo = new vector<char>;
-	char testChar = 'i';
-	(*testInfo).add(testChar);
-	vector<char>* testValue = new vector<char>;
-	char testChar2 = 'v';
-	(*testValue).add(testChar2);
-	{
+		vector<char>* testInfo = new vector<char>;
+		char testChar = 'i';
+		(*testInfo).add(testChar);
+		vector<char>* testValue = new vector<char>;
+		char testChar2 = 'v';
+		(*testValue).add(testChar2);
+		{
+			//Cell
+			//Cell(); //Default constructor
+			Cell<vector<char>>* emptyCell = new Cell<vector<char>>();
+			cout << "Empty cell: " << *emptyCell << endl;
+			//Cell(DT* v); //Initializer
+			Cell<vector<char>>filledCell = Cell<vector<char>>(testValue);
+			//friend ostream& operator<< (ostream& s, Cell<T>& c); //Overloaded ostream operator
+			cout << "Filled cell: " << filledCell << endl;
+			//Cell(const Cell<DT>& c);//Copy constructor
+			Cell<vector<char>> copyOfCell = Cell<vector<char>>(filledCell);
+			cout << "Copy of cell: " << copyOfCell << endl;
+			//void operator= (const Cell<DT>& c);//Overloaded assignment operator
+			Cell<vector<char>> assignedCopyOfCell = copyOfCell;
+			cout << "Assigned copy of cell: " << assignedCopyOfCell << endl;
+			//void setRight(Cell<DT>* cellPointer);
+			copyOfCell.setRight(&assignedCopyOfCell);
+			//Cell<DT>* getRight();
+			cout << "Right cell: " << *copyOfCell.getRight() << endl;
+			cout << endl;
+
+			//CellNode
+			//CellNode(); //Default constructor
+			CellNode<vector<char>, vector<char>> emptyCellNode = CellNode<vector<char>, vector<char>>();
+			cout << "Empty cell node: " << emptyCellNode << endl;
+			//CellNode(DT1* i, Cell<DT2>* c);//Initializer
+			CellNode<vector<char>, vector<char>> initializedCellNode = CellNode<vector<char>, vector<char>>(testInfo, &filledCell);
+			//friend ostream& operator<< (ostream& s, CellNode<DT1, DT2>& cn); //Overloaded ostream operator
+			cout << "Initialized cell node: " << initializedCellNode << endl;
+			//CellNode(const CellNode<DT1, DT2>& cn);//Copy constructor
+			CellNode<vector<char>, vector<char>> copiedCellNode = CellNode<vector<char>, vector<char>>(initializedCellNode);
+			cout << "Copied cell node: " << copiedCellNode << endl;
+			//void operator= (const CellNode<DT1, DT2>& c);//Overloaded assignment operator
+			CellNode<vector<char>, vector<char>> assignedCellNode = initializedCellNode;
+			cout << "Assigned cell node: " << assignedCellNode << endl;
+			//Cell<DT2>* getFirstCell();
+			cout << "First cell: " << *initializedCellNode.getFirstCell() << endl;
+			//DT1* getInfo();
+			cout << "Cell node info: " << *initializedCellNode.getInfo() << endl;
+			cout << endl;
+
+			// MasterCell
+			//MasterCell();//Default constructor
+			MasterCell<vector<char>, vector<char>> emptyMasterCell = MasterCell<vector<char>, vector<char>>();
+			//friend ostream& operator<< (ostream& s, MasterCell<T1, T2>& mc); //Overloaded ostream operator
+			cout << "Empty master cell: " << emptyMasterCell << endl;
+			//MasterCell();//Initializer
+			MasterCell<vector<char>, vector<char>> initializedMasterCell = MasterCell<vector<char>, vector<char>>(initializedCellNode);
+			cout << "Initialized master cell: " << initializedMasterCell;
+			//MasterCell(const MasterCell<DT1, DT2>& mc);//Copy constructor
+			MasterCell<vector<char>, vector<char>> copiedMasterCell(initializedMasterCell);
+			cout << "Copied master cell: " << copiedMasterCell;
+			//void addCellNode(DT1* info, Cell<DT2>* cell);
+			copiedMasterCell.addCellNode(testInfo, &filledCell);
+			cout << "Added another cell node: " << copiedMasterCell;
+			//void operator= (const MasterCell<DT1, DT2>& mc);//Overloaded assignment operator
+			MasterCell<vector<char>, vector<char>> assignedMasterCell = copiedMasterCell;
+			cout << "Assigned master cell: " << assignedMasterCell;
+			//int getNumNodes();
+			cout << "Assigned cell numNodes: " << assignedMasterCell.getNumNodes() << endl;
+			//CellNode<DT1, DT2>* getCellNodes();
+			for (int i = 0; i < assignedMasterCell.getNumNodes(); i++) {
+				cout << "\tAssigned cell cellNode " << i << ' ' << assignedMasterCell.getCellNodes()[i] << endl;
+			}
+		}
+		cout << endl;
+		cout << "Repeated with integer values " << endl;
+		cout << endl;
+
+		//	Demonstrate	the	working	of the classes with	two	different data types: int and intacter strings.
+		vector<int>* testIntInfo = new vector<int>;
+		int testint = 1;
+		(*testIntInfo).add(testint);
+		vector<int>* testIntValue = new vector<int>;
+		int testint2 = 2;
+		(*testIntValue).add(testint2);
+
 		//Cell
 		//Cell(); //Default constructor
-		Cell<vector<char>>* emptyCell = new Cell<vector<char>>();
+		Cell<vector<int>>* emptyCell = new Cell<vector<int>>();
 		cout << "Empty cell: " << *emptyCell << endl;
 		//Cell(DT* v); //Initializer
-		Cell<vector<char>>filledCell = Cell<vector<char>>(testValue);
+		Cell<vector<int>>filledCell = Cell<vector<int>>(testIntValue);
 		//friend ostream& operator<< (ostream& s, Cell<T>& c); //Overloaded ostream operator
 		cout << "Filled cell: " << filledCell << endl;
 		//Cell(const Cell<DT>& c);//Copy constructor
-		Cell<vector<char>> copyOfCell = Cell<vector<char>>(filledCell);
+		Cell<vector<int>> copyOfCell = Cell<vector<int>>(filledCell);
 		cout << "Copy of cell: " << copyOfCell << endl;
 		//void operator= (const Cell<DT>& c);//Overloaded assignment operator
-		Cell<vector<char>> assignedCopyOfCell = copyOfCell;
-		cout << "Assigned copy of cell: " << assignedCopyOfCell << endl;
+		Cell<vector<int>> newCopyOfCell = copyOfCell;
+		cout << "Assigned copy of cell: " << newCopyOfCell << endl;
 		//void setRight(Cell<DT>* cellPointer);
-		copyOfCell.setRight(&assignedCopyOfCell);
+		copyOfCell.setRight(&newCopyOfCell);
 		//Cell<DT>* getRight();
 		cout << "Right cell: " << *copyOfCell.getRight() << endl;
 		cout << endl;
 
 		//CellNode
 		//CellNode(); //Default constructor
-		CellNode<vector<char>, vector<char>> emptyCellNode = CellNode<vector<char>, vector<char>>();
+		CellNode<vector<int>, vector<int>> emptyCellNode = CellNode<vector<int>, vector<int>>();
 		cout << "Empty cell node: " << emptyCellNode << endl;
 		//CellNode(DT1* i, Cell<DT2>* c);//Initializer
-		CellNode<vector<char>, vector<char>> initializedCellNode = CellNode<vector<char>, vector<char>>(testInfo, &filledCell);
+		CellNode<vector<int>, vector<int>> intinitedCellNode = CellNode<vector<int>, vector<int>>(testIntInfo, &filledCell);
 		//friend ostream& operator<< (ostream& s, CellNode<DT1, DT2>& cn); //Overloaded ostream operator
-		cout << "Initialized cell node: " << initializedCellNode << endl;
+		cout << "Initialized cell node: " << intinitedCellNode << endl;
 		//CellNode(const CellNode<DT1, DT2>& cn);//Copy constructor
-		CellNode<vector<char>, vector<char>> copiedCellNode = CellNode<vector<char>, vector<char>>(initializedCellNode);
-		cout << "Copied cell node: " << copiedCellNode << endl;
+		CellNode<vector<int>, vector<int>> copiedCellNode = CellNode<vector<int>, vector<int>>(intinitedCellNode);
+		cout << "Copied cell node: " << copiedCellNode;
 		//void operator= (const CellNode<DT1, DT2>& c);//Overloaded assignment operator
-		CellNode<vector<char>, vector<char>> assignedCellNode = initializedCellNode;
+		CellNode<vector<int>, vector<int>> assignedCellNode = intinitedCellNode;
 		cout << "Assigned cell node: " << assignedCellNode << endl;
 		//Cell<DT2>* getFirstCell();
-		cout << "First cell: " << *initializedCellNode.getFirstCell() << endl;
+		cout << "First cell: " << *intinitedCellNode.getFirstCell() << endl;
 		//DT1* getInfo();
-		cout << "Cell node info: " << *initializedCellNode.getInfo() << endl;
+		cout << "Cell node info: " << *intinitedCellNode.getInfo() << endl;
 		cout << endl;
 
 		// MasterCell
 		//MasterCell();//Default constructor
-		MasterCell<vector<char>, vector<char>> emptyMasterCell = MasterCell<vector<char>, vector<char>>();
+		MasterCell<vector<int>, vector<int>> emptyMasterCell = MasterCell<vector<int>, vector<int>>();
 		//friend ostream& operator<< (ostream& s, MasterCell<T1, T2>& mc); //Overloaded ostream operator
 		cout << "Empty master cell: " << emptyMasterCell << endl;
 		//MasterCell();//Initializer
-		MasterCell<vector<char>, vector<char>> initializedMasterCell = MasterCell<vector<char>, vector<char>>(initializedCellNode);
+		MasterCell<vector<int>, vector<int>> initializedMasterCell = MasterCell<vector<int>, vector<int>>(intinitedCellNode);
 		cout << "Initialized master cell: " << initializedMasterCell;
 		//MasterCell(const MasterCell<DT1, DT2>& mc);//Copy constructor
-		MasterCell<vector<char>, vector<char>> copiedMasterCell(initializedMasterCell);
-		cout << "Copied master cell: " << copiedMasterCell;
+		MasterCell<vector<int>, vector<int>> copiedMasterCell(initializedMasterCell);
+		cout << "Copied master cell: " << copiedMasterCell << endl;
 		//void addCellNode(DT1* info, Cell<DT2>* cell);
-		copiedMasterCell.addCellNode(testInfo, &filledCell);
-		cout << "Added another cell node: " << copiedMasterCell;
+		initializedMasterCell.addCellNode(testIntInfo, &filledCell);
+		cout << "Added another cell node: " << initializedMasterCell;
 		//void operator= (const MasterCell<DT1, DT2>& mc);//Overloaded assignment operator
-		MasterCell<vector<char>, vector<char>> assignedMasterCell = copiedMasterCell;
+		MasterCell<vector<int>, vector<int>> assignedMasterCell = copiedMasterCell;
 		cout << "Assigned master cell: " << assignedMasterCell;
 		//int getNumNodes();
-		cout << "Assigned cell numNodes: " << assignedMasterCell.getNumNodes() << endl;
+		cout << "Initialized cell numNodes: " << assignedMasterCell.getNumNodes() << endl;
 		//CellNode<DT1, DT2>* getCellNodes();
-		for (int i = 0; i < assignedMasterCell.getNumNodes(); i++) {
-			cout << "\tAssigned cell cellNode " << i << ' ' << assignedMasterCell.getCellNodes()[i] << endl;
+		for (int i = 0; i < initializedMasterCell.getNumNodes(); i++) {
+			cout << "\tInitialized cell cellNode " << i << ' ' << initializedMasterCell.getCellNodes()[i] << endl;
 		}
-	}
-	cout << endl;
-	cout << "Repeated with integer values " << endl;
-	cout << endl;
-
-	//	Demonstrate	the	working	of the classes with	two	different data types: int and intacter strings.
-	vector<int>* testIntInfo = new vector<int>;
-	int testint = 1;
-	(*testIntInfo).add(testint);
-	vector<int>* testIntValue = new vector<int>;
-	int testint2 = 2;
-	(*testIntValue).add(testint2);
-
-	//Cell
-	//Cell(); //Default constructor
-	Cell<vector<int>>* emptyCell = new Cell<vector<int>>();
-	cout << "Empty cell: " << *emptyCell << endl;
-	//Cell(DT* v); //Initializer
-	Cell<vector<int>>filledCell = Cell<vector<int>>(testIntValue);
-	//friend ostream& operator<< (ostream& s, Cell<T>& c); //Overloaded ostream operator
-	cout << "Filled cell: " << filledCell << endl;
-	//Cell(const Cell<DT>& c);//Copy constructor
-	Cell<vector<int>> copyOfCell = Cell<vector<int>>(filledCell);
-	cout << "Copy of cell: " << copyOfCell << endl;
-	//void operator= (const Cell<DT>& c);//Overloaded assignment operator
-	Cell<vector<int>> newCopyOfCell = copyOfCell;
-	cout << "Assigned copy of cell: " << newCopyOfCell << endl;
-	//void setRight(Cell<DT>* cellPointer);
-	copyOfCell.setRight(&newCopyOfCell);
-	//Cell<DT>* getRight();
-	cout << "Right cell: " << *copyOfCell.getRight() << endl;
-	cout << endl;
-
-	//CellNode
-	//CellNode(); //Default constructor
-	CellNode<vector<int>, vector<int>> emptyCellNode = CellNode<vector<int>, vector<int>>();
-	cout << "Empty cell node: " << emptyCellNode << endl;
-	//CellNode(DT1* i, Cell<DT2>* c);//Initializer
-	CellNode<vector<int>, vector<int>> intinitedCellNode = CellNode<vector<int>, vector<int>>(testIntInfo, &filledCell);
-	//friend ostream& operator<< (ostream& s, CellNode<DT1, DT2>& cn); //Overloaded ostream operator
-	cout << "Initialized cell node: " << intinitedCellNode << endl;
-	//CellNode(const CellNode<DT1, DT2>& cn);//Copy constructor
-	CellNode<vector<int>, vector<int>> copiedCellNode = CellNode<vector<int>, vector<int>>(intinitedCellNode);
-	cout << "Copied cell node: " << copiedCellNode;
-	//void operator= (const CellNode<DT1, DT2>& c);//Overloaded assignment operator
-	CellNode<vector<int>, vector<int>> assignedCellNode = intinitedCellNode;
-	cout << "Assigned cell node: " << assignedCellNode << endl;
-	//Cell<DT2>* getFirstCell();
-	cout << "First cell: " << *intinitedCellNode.getFirstCell() << endl;
-	//DT1* getInfo();
-	cout << "Cell node info: " << *intinitedCellNode.getInfo() << endl;
-	cout << endl;
-
-	// MasterCell
-	//MasterCell();//Default constructor
-	MasterCell<vector<int>, vector<int>> emptyMasterCell = MasterCell<vector<int>, vector<int>>();
-	//friend ostream& operator<< (ostream& s, MasterCell<T1, T2>& mc); //Overloaded ostream operator
-	cout << "Empty master cell: " << emptyMasterCell << endl;
-	//MasterCell();//Initializer
-	MasterCell<vector<int>, vector<int>> initializedMasterCell = MasterCell<vector<int>, vector<int>>(intinitedCellNode);
-	cout << "Initialized master cell: " << initializedMasterCell;
-	//MasterCell(const MasterCell<DT1, DT2>& mc);//Copy constructor
-	MasterCell<vector<int>, vector<int>> copiedMasterCell(initializedMasterCell);
-	cout << "Copied master cell: " << copiedMasterCell << endl;
-	//void addCellNode(DT1* info, Cell<DT2>* cell);
-	initializedMasterCell.addCellNode(testIntInfo, &filledCell);
-	cout << "Added another cell node: " << initializedMasterCell;
-	//void operator= (const MasterCell<DT1, DT2>& mc);//Overloaded assignment operator
-	MasterCell<vector<int>, vector<int>> assignedMasterCell = copiedMasterCell;
-	cout << "Assigned master cell: " << assignedMasterCell;
-	//int getNumNodes();
-	cout << "Initialized cell numNodes: " << assignedMasterCell.getNumNodes() << endl;
-	//CellNode<DT1, DT2>* getCellNodes();
-	for (int i = 0; i < initializedMasterCell.getNumNodes(); i++) {
-		cout << "\tInitialized cell cellNode " << i << ' ' << initializedMasterCell.getCellNodes()[i] << endl;
-	}
-	cout << "Finished" << endl;
-*/
+		cout << "Finished" << endl;
+	*/
 	return 0;
 }
