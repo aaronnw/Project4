@@ -383,12 +383,6 @@ vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
 			matchingNodes.add(*_myCellNodes[i].getInfo());
 		}
 	}
-
-//	for (Cell<DT2>* c = _myCell; c != nullptr; c = c->getRight()) {
-//		if (intMatch(c->getValue(), key)) {
-//			return true;
-//		}
-//	}
 	return matchingNodes;
 }
 
@@ -459,6 +453,10 @@ int main() {
 	int noItems;
 	char c;
 	int count = 0;
+	cin.get(c);
+	while (c != '\n') {
+		cin.get(c);
+	}
 	MasterCell<vector<char>, vector<char>> masterCell;
 	while (!cin.eof()) {
 		Cell<vector<char>>* previousCell = new Cell<vector<char>>();
@@ -510,7 +508,7 @@ int main() {
 	//End of file
 	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
 	cout << masterCell << endl;
-	cout<< masterCell.findKeywords(3);
+	cout << masterCell.findKeywords(5000) << endl;
 
 /*
 	///Call the methods for each class to demonstrate that they work
