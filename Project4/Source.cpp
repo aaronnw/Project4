@@ -373,7 +373,7 @@ int MasterCell<DT1, DT2>::getNumNodes() const {
 	return numNodes;
 }
 ///////////////////////////////////////////////////////////////////////////////////////
-//Project 4 files
+//Project 4 methods
 
 //Return a list of info variables corresponding to cell nodes containing the key
 template<class DT1, class DT2>
@@ -381,10 +381,17 @@ vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
 	vector<vector<char>> matchingNodes;
 	//For each cell node
 	for (int i = 0; i < numNodes; i++) {
-		//If the cell node contains the key add its info to the list
+/*	For searching through the whole list	
+	//If the cell node contains the key add its info to the list
 		if (_myCellNodes[i].contains(key)) {
 			matchingNodes.add(*_myCellNodes[i].getInfo());
 		}
+*/		
+//For searching only the first value
+		if (intMatch((*_myCellNodes[i].getFirstCell()).getValue(), key)) {
+			matchingNodes.add(*_myCellNodes[i].getInfo());
+		}
+
 	}
 	return matchingNodes;
 }
@@ -449,9 +456,7 @@ vector<int> MasterCell<DT1, DT2>::orKeywords(char* input1, char* input2) {
 		}
 	}
 	for (Cell<DT2>* c2 = cn2.getFirstCell(); c2 != nullptr; c2 = c2->getRight()) {
-//		if (!cn1.contains(vectorCharToInt(c2->getValue()))) {
-			intList.add(vectorCharToInt(c2->getValue()));
-//		}
+		intList.add(vectorCharToInt(c2->getValue()));
 	}
 	return intList;
 }
@@ -628,7 +633,10 @@ int main() {
 	//End of file
 //	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;  --Removed for project 4
 	cout << masterCell << endl;
-	
+	cout << masterCell.findKeywords(3) << endl;
+	cout << masterCell.andKeywords("Compiler Construction", "Theory of Computation") << endl;
+	cout << masterCell.orKeywords("Compiler Construction", "Theory of Computation") << endl;
+	cout << masterCell.xorKeywords("Compiler Construction", "Theory of Computation") << endl;
 
 	/*
 		///Call the methods for each class to demonstrate that they work
