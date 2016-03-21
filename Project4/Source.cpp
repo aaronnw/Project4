@@ -938,7 +938,7 @@ int main() {
 		do {
 			cin.get(c);
 			//While there is a valid character read it in
-			if (c == '\n') {
+			if ((c == '\n') || (cin.eof())) {
 				break;
 			}
 			else if ((c == '|') || (c == '%') || (c == '&')) {
@@ -993,9 +993,9 @@ int main() {
 			}
 		}
 		//Print results of boolean operations
-	//	cout << *result << endl;
 		displayIntList(*result);
 	}
+	//cout << masterCell.ExclusiveOR("The Computer Science Profession", "Introduction to Program Design") << endl;
 	//End of file
 /*	 Testing Project 4 methods with example file
 	cout << masterCell.findKeywords(3) << endl;
