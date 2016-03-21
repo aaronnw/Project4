@@ -910,7 +910,7 @@ int main() {
 		linecount++;
 		if (cin.eof()) break;
 	}
-
+	//Print master cell and explanation
 	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
 	cout << masterCell << endl;
 	//Read the boolean entries for the project 4 bonus
@@ -978,6 +978,7 @@ int main() {
 				*result = masterCell.ExclusiveOR((*result) , (*boolQueryList)[i+1]);
 			}
 		}
+		//Print results of boolean operations
 		cout << *result << endl;
 	}
 	//End of file
