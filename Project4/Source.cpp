@@ -409,18 +409,18 @@ vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
 	vector<vector<char>> matchingNodes;
 	//For each cell node
 	for (int i = 0; i < numNodes; i++) {
-/*	For searching through the whole list	
+	//For searching through the whole list	
 	//If the cell node contains the key add its info to the list
 		if (_myCellNodes[i].contains(key)) {
 			matchingNodes.add(*_myCellNodes[i].getInfo());
 		}
-*/		
+/*
 //For searching only the first value
 		if (intMatch((*_myCellNodes[i].getFirstCell()).getValue(), key)) {
 			matchingNodes.add(*_myCellNodes[i].getInfo());
-		}
-
+		}	*/
 	}
+
 	return matchingNodes;
 }
 
@@ -848,6 +848,19 @@ bool stringMatch(vector<char> string1, vector<char> string2) {
 	}
 	return true;
 }
+//Display a a list of ints in a specific format
+void displayIntList(vector<int> listOfInts) {
+	if (listOfInts.getSize() == 1) {
+		cout << listOfInts[0];
+	}
+	else if(listOfInts.getSize() >1) {
+		cout << listOfInts[0];
+		for (int i = 1; i < listOfInts.getSize(); i++) {
+			cout << ", " << listOfInts[i];
+		}
+	}
+	cout << endl;
+}
 //Main method
 int main() {
 	char blank = ' ';
@@ -856,6 +869,7 @@ int main() {
 	int numCellNodes = 0;
 	int count = 0;
 	int linecount = 0;
+	int noItems;
 	cin >> numCellNodes;
 	cin.get(c);
 	while (c != '\n'){
@@ -873,8 +887,8 @@ int main() {
 			(*info).add(c);
 			cin.get(c);
 		}
-//		cin.get(blank); --Removed for project 4 based on example
-//		cin >> noItems; --Removed for project 4 based on example
+		cin.get(blank);
+		cin >> noItems; 
 		cin.get(blank);
 		//Read in the values
 		do {
@@ -979,7 +993,8 @@ int main() {
 			}
 		}
 		//Print results of boolean operations
-		cout << *result << endl;
+	//	cout << *result << endl;
+		displayIntList(*result);
 	}
 	//End of file
 /*	 Testing Project 4 methods with example file
