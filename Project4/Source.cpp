@@ -69,7 +69,7 @@ public:
 	Cell<DT2>* getFirstCell(); //Return a pointer to the first cell
 	DT1* getInfo(); //Return a pointer to the info
 	void operator= (const CellNode<DT1, DT2>& c);//Overloaded assignment operator
-	bool CellNode<DT1, DT2>::contains(int key);
+	bool CellNode<DT1, DT2>::contains(int key);//Checks to see if the cell node contains a key
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +91,9 @@ public:
 	void operator= (const MasterCell<DT1, DT2>& mc);//Overloaded assignment operator
 	CellNode<DT1, DT2>* getCellNodes(); //Return a pointer to the first cell node
 	int getNumNodes() const; //Return the number of nodes in the master celltemplate<class DT1, class DT2>
-	vector<vector<char>> findKeywords(int key);
+	vector<vector<char>> findKeywords(int key); //Returns a list of info variables corresponding to cell nodes containing a key
+
+	//Given two inputs, return an appropriate list of integers based on the values held in the master cell
 	vector<int> And(char* input1, char* input2);
 	vector<int> And(vector<int> input1, char* input2);
 	vector<int> And(vector<char> input1, vector<char> input2);
@@ -246,29 +248,29 @@ ostream& operator<< (ostream& s, vector<T>& ac) {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //Cell Methods
-
+///Default constructor
 template<class DT>
 Cell<DT>::Cell() {
 	DT* _value = nullptr;
 	Cell<DT>* _right = nullptr;
 }
-
+///Initializer
 template<class DT>
 Cell<DT>::Cell(DT* v) {
 	_value = v;
 	_right = nullptr;
 }
-
+///Copy constructor
 template<class DT>
 Cell<DT>::Cell(const Cell<DT>& c) {
 	_value = c._value;
 	_right = c._right;
 }
-
+///Destructor
 template<class DT>
 Cell<DT>::~Cell() {
 }
-
+///Overloaded assignment operator
 template<class DT>
 void Cell<DT>::operator=(const Cell<DT>& c) {
 	_value = c._value;
@@ -330,6 +332,7 @@ void CellNode<DT1, DT2>::operator=(const CellNode<DT1, DT2>& cn) {
 	_info = cn._info;
 	_myCell = cn._myCell;
 }
+
 template<class DT1, class DT2>
 bool CellNode<DT1, DT2>::contains(int key) {
 	for (Cell<DT2>* c = _myCell; c != nullptr; c = c->getRight()) {
@@ -421,7 +424,9 @@ vector<vector<char>> MasterCell<DT1, DT2>::findKeywords(int key) {
 	return matchingNodes;
 }
 
+//AND methods with different parameters
 //Return all integers common to two keywords
+
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::And(char* input1, char* input2) {
 	vector<char> keyword1 = inputStringToVector(input1);
@@ -451,7 +456,7 @@ vector<int> MasterCell<DT1, DT2>::And(char* input1, char* input2) {
 	}
 	return commonIntegers;
 }
-//Return all integers common to two keywords
+
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::And(vector<char> input1, vector<char> input2) {
 	vector<int> commonIntegers;
@@ -479,7 +484,7 @@ vector<int> MasterCell<DT1, DT2>::And(vector<char> input1, vector<char> input2) 
 	}
 	return commonIntegers;
 }
-//Return all integers common to two keywords
+
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::And(vector<int> input1, char* input2) {
 	vector<char> keyword2 = inputStringToVector(input2);
@@ -502,7 +507,6 @@ vector<int> MasterCell<DT1, DT2>::And(vector<int> input1, char* input2) {
 	return commonIntegers;
 }
 
-//Return all integers common to two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::And(vector<int> input1, vector<char> input2) {
 	vector<int> commonIntegers;
@@ -524,8 +528,9 @@ vector<int> MasterCell<DT1, DT2>::And(vector<int> input1, vector<char> input2) {
 	return commonIntegers;
 }
 
-
+//OR methods with different parameters
 //Return all integers in either of two keywords
+
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::OR(char* input1, char* input2) {
 	vector<char> keyword1 = inputStringToVector(input1);
@@ -559,7 +564,6 @@ vector<int> MasterCell<DT1, DT2>::OR(char* input1, char* input2) {
 	return intList;
 }
 
-//Return all integers in either of two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::OR(vector<char> input1, vector<char> input2) {
 	vector<int> intList;
@@ -591,7 +595,6 @@ vector<int> MasterCell<DT1, DT2>::OR(vector<char> input1, vector<char> input2) {
 	return intList;
 }
 
-//Return all integers in either of two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::OR(vector<int> input1, char* input2) {
 	vector<char> keyword2 = inputStringToVector(input2);
@@ -618,7 +621,6 @@ vector<int> MasterCell<DT1, DT2>::OR(vector<int> input1, char* input2) {
 	return intList;
 }
 
-//Return all integers in either of two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::OR(vector<int> input1, vector<char> input2) {
 	vector<int> intList;
@@ -643,7 +645,10 @@ vector<int> MasterCell<DT1, DT2>::OR(vector<int> input1, vector<char> input2) {
 	}
 	return intList;
 }
+
+//XOR methods with different parameters
 //Return all integers unique between two keywords
+
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::ExclusiveOR(char* input1, char* input2) {
 	vector<char> keyword1 = inputStringToVector(input1);
@@ -665,7 +670,7 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(char* input1, char* input2) {
 			cn2Found = true;
 		}
 	}
-	//Iterate through both nodes, only adding one of each integer
+	//Iterate through both lists, only adding integers that do not exist in the other
 	for (Cell<DT2>* c1 = cn1.getFirstCell(); c1 != nullptr; c1 = c1->getRight()) {
 		if (!cn2.contains(vectorCharToInt(c1->getValue()))) {
 			intList.add(vectorCharToInt(c1->getValue()));
@@ -679,7 +684,6 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(char* input1, char* input2) {
 	return intList;
 }
 
-//Return all integers unique between two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<char> input1, vector<char> input2) {
 	vector<int> intList;
@@ -699,7 +703,7 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<char> input1, vector<char> 
 			cn2Found = true;
 		}
 	}
-	//Iterate through both nodes, only adding one of each integer
+	//Iterate through both lists, only adding integers that do not exist in the other
 	for (Cell<DT2>* c1 = cn1.getFirstCell(); c1 != nullptr; c1 = c1->getRight()) {
 		if (!cn2.contains(vectorCharToInt(c1->getValue()))) {
 			intList.add(vectorCharToInt(c1->getValue()));
@@ -713,7 +717,6 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<char> input1, vector<char> 
 	return intList;
 }
 
-//Return all integers unique between two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<int> input1, char* input2) {
 	vector<char> keyword2 = inputStringToVector(input2);
@@ -728,7 +731,7 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<int> input1, char* input2) 
 			cn2Found = true;
 		}
 	}
-	//Iterate through both nodes, only adding one of each integer
+	//Iterate through both lists, only adding integers that do not exist in the other
 	for (Cell<DT2>* c2 = cn2.getFirstCell(); c2 != nullptr; c2 = c2->getRight()) {
 		if (!input1.contains(vectorCharToInt(c2->getValue()))) {
 			intList.add(vectorCharToInt(c2->getValue()));
@@ -742,7 +745,6 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<int> input1, char* input2) 
 	return intList;
 }
 
-//Return all integers unique between two keywords
 template<class DT1, class DT2>
 vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<int> input1, vector<char> input2) {
 	vector<int> intList;
@@ -756,7 +758,7 @@ vector<int> MasterCell<DT1, DT2>::ExclusiveOR(vector<int> input1, vector<char> i
 			cn2Found = true;
 		}
 	}
-	//Iterate through both nodes, only adding one of each integer
+	//Iterate through both lists, only adding integers that do not exist in the other
 	for (Cell<DT2>* c2 = cn2.getFirstCell(); c2 != nullptr; c2 = c2->getRight()) {
 		if (!input1.contains(vectorCharToInt(c2->getValue()))) {
 			intList.add(vectorCharToInt(c2->getValue()));
@@ -908,6 +910,9 @@ int main() {
 		linecount++;
 		if (cin.eof()) break;
 	}
+
+	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;
+	cout << masterCell << endl;
 	//Read the boolean entries for the project 4 bonus
 	while (!cin.eof()) {
 		vector<char>* boolQuery = new vector<char>();
@@ -976,17 +981,11 @@ int main() {
 		cout << *result << endl;
 	}
 	//End of file
-//	cout << "Single master cell object created from input" << endl << "Each line is a cell node, followed by all of its contained cells" << endl << endl;  --Removed for project 4
-//	 Testing Project 4 methods	
-//	cout << masterCell << endl;
-//	cout << masterCell.findKeywords(3) << endl;
-//	cout << masterCell.And("Compiler construction", "Theory of Computation") << endl;
-//	cout << masterCell.OR("Compiler construction", "Theory of Computation") << endl;
-//	cout << masterCell.ExclusiveOR("Compiler construction", "Theory of Computation") << endl;
-
-	//BONUS 
-	//Precedence XOR > AND > OR 
-//	cout << masterCell.And((masterCell.And("Operating Systems", "Compiler Construction")), "Theory of Computation") << endl;
-//	cout << masterCell.And(masterCell.OR("Database Management Systems", "Operating Systems"), "Algorithms Analysis") << endl;
+/*	 Testing Project 4 methods with example file
+	cout << masterCell.findKeywords(3) << endl;
+	cout << masterCell.And("Compiler Construction", "Theory of Computation") << endl;
+	cout << masterCell.OR("Compiler Construction", "Theory of Computation") << endl;
+	cout << masterCell.ExclusiveOR("Compiler Construction", "Theory of Computation") << endl;
+	*/
 	return 0;
 }
